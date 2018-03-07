@@ -1,0 +1,53 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+<script>
+window.taskLaunchCount = 0;
+window.taskUrl = "window.html";
+window.taskName = 'taskwindow_1';
+
+require(['dojo/request', 'dojo/json'], function(request, JSON) {
+    window.openAndFocus = function() {
+            var options = "toolbar=no,menubar=no,scrollbars=yes,top=178,resizable=yes,left=168,width=500,screenx=168,screeny=178,height=500",
+            w;
+
+            if (window.taskLaunchCount === 1) {
+                w = window.open(window.taskUrl, window.taskName, options);
+                if (w && w.closed) {
+                    w.close();
+                    return;
+                }
+            } else {
+                w = window.open("", window.taskName, options);
+            }
+            
+            if (w) {
+                w.focus();
+            }
+    };
+   
+    window.launchTask = function () {
+        console.log("-> launchTask");
+        window.taskLaunchCount = window.taskLaunchCount + 1;
+        console.log("   launchTask: count = "+window.taskLaunchCount);
+
+        request.post(window.taskUrl, {
+            preventCache: true,
+            data: {
+            },
+            handleAs: 'html'
+        }).response.then(function(response) {
+            openAndFocus();
+        }, function(error) {
+            openAndFocus();
+        });
+
+        console.log("<- launchTask");
+    };
+});
+</script>
+</head>
+<body>
+<a href="#" onclick="launchTask();">Open and Focus Window</a>
+</body>
+<html>
